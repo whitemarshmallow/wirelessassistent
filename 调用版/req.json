@@ -1,0 +1,10 @@
+{
+  "imageTypes": ["RSRP热力图"],
+  "category": "user",
+  "subOption": 5,
+  "dataSource": "viavi",
+  "downloadParams": {
+    "startTime": "1739758277000",
+    "endTime":   "1739758877000"
+  }
+}

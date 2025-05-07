@@ -1,0 +1,3 @@
+chcp 65001
+
+python gen_images.py "{\"imageTypes\": [\"RSRP热力图\", \"SINR热力图\"], \"category\": \"baseStation\", \"subOption\": 1, \"dataSource\": \"viavi\", \"downloadParams\": {\"mainCategory\": \"urban_coverage\", \"features\": [\"信号质量测量\", \"吞吐\"], \"startTime\": \"1739758277000\", \"endTime\": \"1739758877000\"}}"
