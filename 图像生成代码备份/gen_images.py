@@ -21,8 +21,8 @@ rcParams['font.sans-serif'] = ['SimHei']
 rcParams['axes.unicode_minus'] = False
 
 # ========== 路径配置 ==========
-DATA_DIR   = pathlib.Path("data")               # 原始数据
-TMP_DIR    = pathlib.Path("generated_images")   # 此脚本直接写入
+DATA_DIR   = pathlib.Path("../data")               # 原始数据
+TMP_DIR    = pathlib.Path("../generated_images")   # 此脚本直接写入
 TMP_DIR.mkdir(exist_ok=True)
 
 # ======== 通用数据过滤 =========
