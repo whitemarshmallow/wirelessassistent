@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # app.py  —— 直接  python app.py  即可启动
 import os, io, json, zipfile, pathlib
+import matplotlib
+matplotlib.use("Agg")
 import traceback
 
 from flask import Flask, request, jsonify, send_file, Response, abort
@@ -15,7 +17,6 @@ from data_filter import filter_viavi
 
 app = Flask(__name__)
 
-# ---------- ① 生成热力图接口 ---------------------------------
 # ---------- ① 生成热力图接口 ---------------------------------
 @app.route("/api/assistant/image", methods=["POST"])
 def api_generate_image():
@@ -72,7 +73,7 @@ def api_download_viavi():
         app.logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 400
 
-    # ----------------- ③ 模型分析接口 -----------------------------
+# ----------------- ③ 模型分析接口 -----------------------------
 @app.route("/api/assistant", methods=["POST"])
 def api_assistant():
     try:
