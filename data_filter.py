@@ -11,6 +11,8 @@ import os
 import pathlib
 import pandas as pd
 
+from pathlib import Path
+
 # ----------------------- 路径配置 ------------------------------
 # DATA_DIR = <当前文件夹>/data
 DATA_DIR = pathlib.Path(__file__).parent / "data"
@@ -139,3 +141,70 @@ def filter_viavi(req: dict):
 
     zipname = f"{req['mainCategory']}_{start_ms}_{end_ms}.zip"
     return buf, "application/zip", zipname
+
+
+
+# ==========================================================
+# 本地测试用例：python data_filter.py
+# ==========================================================
+# if __name__ == "__main__":
+    # import pprint, os, sys
+    #
+    # # ------- 1. 组装一个“前端请求” -------
+    # req_demo = {
+    #     "mainCategory": "urban_converage",          # 随便填，zip 文件名里会用到
+    #     # "features": ["信号质量测量", "吞吐"],        # <= 确保都在 COL_MAP 里
+    #     "features": ["信号质量测量"],  # <= 确保都在 COL_MAP 里
+    #     "startTime": "1739505002000",               # 根据你的 CSV 调整
+    #     "endTime":   "1739505459000",
+    #     # "format":    "zip"                          # 改成 "csv" 只取一个 feature
+    #     "format": "csv"
+    # }
+    #
+    # print("\n=== 发起本地测试请求 ===")
+    # pprint.pprint(req_demo, width=80)
+    #
+    # # ------- 2. 调用核心函数 -------
+    # try:
+    #     obj, mime, fname = filter_viavi(req_demo)
+    # except Exception as e:
+    #     print("\n[❌] filter_viavi 抛异常：", e)
+    #     sys.exit(1)
+    #
+    # # ------- 3. 打印调试信息 -------
+    # print("\n[✅] filter_viavi 返回成功：")
+    # print("• mimetype      :", mime)
+    # print("• download_name :", fname)
+    #
+    # if isinstance(obj, io.BytesIO):
+    #     size_kb = len(obj.getvalue()) / 1024
+    #     print(f"• BytesIO 大小 : {size_kb:.1f} KB")
+    #     # 可
+
+if __name__ == "__main__":
+    # ====== 1. 准备一个模拟请求 ======
+    req = {
+        "mainCategory": "urban_converage",
+        # "features": ["信号质量测量", "吞吐"],
+        "features": ["信号质量测量"],
+        # "startTime": "1739505002000",
+        # "endTime": "1739505459000",
+        "startTime": "1739758277000",
+        "endTime": "1739758583000",
+        "format": "csv"  # or "csv"
+    }
+
+    # ====== 2. 调用核心函数 ======
+    obj, mime, fname = filter_viavi(req)
+    print("MIME      :", mime)
+    print("Down‑name :", fname)
+
+    # ====== 3. 如果是 BytesIO → 写到当前目录，方便查看 ======
+    if isinstance(obj, io.BytesIO):
+        out_path = Path(fname)
+        out_path.write_bytes(obj.getvalue())
+        print(f"已把内容写到本地: {out_path.resolve()}")
+    else:
+        # obj 就是磁盘路径字符串（只可能出现在 format='csv' 且你改过实现）
+        print("生成文件路径:", Path(obj).resolve())
+

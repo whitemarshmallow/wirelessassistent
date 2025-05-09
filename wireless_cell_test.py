@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import io                # <‑ 之前就可能已经用到
+import contextlib
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -260,40 +262,86 @@ def solve_kpi_qos(df):
     ############################
     # 主流程：根据用户输入调用对应函数
     ############################
-def solve_problem(problem_id, df):
+# def solve_problem(problem_id, df):
+#     """
+#     问题对应关系：
+#       1 -> 容量与负载管理
+#       2 -> 能耗与能效分析
+#       3 -> 邻区关系和切换优化
+#       4 -> 基站MIMO/波束管理
+#       5 -> RRC连接分析
+#       6 -> PCI/天线方向 & 邻区
+#       7 -> 综合KPI & QoS预测
+#     """
+#     if problem_id == 1:
+#         solve_capacity_load(df)
+#     elif problem_id == 2:
+#         solve_energy_efficiency(df)
+#     elif problem_id == 3:
+#         solve_handover_optimization(df)
+#     elif problem_id == 4:
+#         solve_mimo_beam(df)
+#     elif problem_id == 5:
+#         solve_rrc_connection(df)
+#     elif problem_id == 6:
+#         solve_pci_antenna_neighbor(df)
+#     elif problem_id == 7:
+#         solve_kpi_qos(df)
+#     else:
+#         print("无效的问题 ID，请输入 1~7")
+
+def solve_problem(problem_id, df, *, to_str: bool = False):
     """
-    问题对应关系：
-      1 -> 容量与负载管理
-      2 -> 能耗与能效分析
-      3 -> 邻区关系和切换优化
-      4 -> 基站MIMO/波束管理
-      5 -> RRC连接分析
-      6 -> PCI/天线方向 & 邻区
-      7 -> 综合KPI & QoS预测
+    参数
+    ----
+    problem_id : 1‑7 之间的整数，见下方映射
+    df         : 预先加载好的 DataFrame
+    to_str     : True  → 捕获函数内部所有 print 并以字符串返回
+                 False → 维持原有行为，直接向控制台打印
+
+    返回
+    ----
+    * to_str=False → None
+    * to_str=True  → str  （所有打印内容）
     """
-    if problem_id == 1:
-        solve_capacity_load(df)
-    elif problem_id == 2:
-        solve_energy_efficiency(df)
-    elif problem_id == 3:
-        solve_handover_optimization(df)
-    elif problem_id == 4:
-        solve_mimo_beam(df)
-    elif problem_id == 5:
-        solve_rrc_connection(df)
-    elif problem_id == 6:
-        solve_pci_antenna_neighbor(df)
-    elif problem_id == 7:
-        solve_kpi_qos(df)
-    else:
-        print("无效的问题 ID，请输入 1~7")
+
+    # ========== 1) 根据 need_capture 判断是否重定向 stdout ==========
+    if to_str:
+        buf = io.StringIO()
+        ctx = contextlib.redirect_stdout(buf)
+        ctx.__enter__()          # 开始重定向
+
+    try:
+        # ========== 2) 原有业务逻辑保持不变 ==========
+        if problem_id == 1:
+            solve_capacity_load(df)
+        elif problem_id == 2:
+            solve_energy_efficiency(df)
+        elif problem_id == 3:
+            solve_handover_optimization(df)
+        elif problem_id == 4:
+            solve_mimo_beam(df)
+        elif problem_id == 5:
+            solve_rrc_connection(df)
+        elif problem_id == 6:
+            solve_pci_antenna_neighbor(df)
+        elif problem_id == 7:
+            solve_kpi_qos(df)
+        else:
+            print("无效的问题 ID，请输入 1~7")
+
+    finally:
+        # ========== 3) 如果需要，关闭重定向并返回字符串 ==========
+        if to_str:
+            ctx.__exit__(None, None, None)   # 恢复 stdout
+            return buf.getvalue()            # 返回捕获到的所有文本
 
 
 ############################
 # 脚本入口
 ############################
 if __name__ == "__main__":
-    data_file = "CellReports.csv"  # 修改为你的实际文件路径
+    data_file = "data/CellReports.csv"  # 修改为你的实际文件路径
     df = load_data(data_file)
 
     print("请选择要解决的问题 ID：")

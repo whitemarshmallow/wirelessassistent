@@ -49,7 +49,7 @@ def _lazy_import_small_models(category: str):
 
         elif category == "user":
             if _ue_solver is None:
-                mod = importlib.import_module("wireless_ue_test")
+                mod = importlib.import_module("wireless_UE_test")
                 _ue_solver = mod.solve_problem
             return _ue_solver, None
 
@@ -108,15 +108,19 @@ def analyse_and_reply(req: Dict[str, Any]) -> Dict[str, Any]:
                 }
 
             # 3) 把 DataFrame 传给 solve_problem
-            sm_text = solver(prob_id, df)
+
+            sm_text = solver(prob_id, df,to_str=True)
         else:
             sm_text = err_msg or f"未知 category={category}"
+
+        reply += f"\n\n[小模型输出]\n{sm_text}"
 
         # ---------- 3. 返回 ----------
         return {
             "success": True,
             "code"   : 200,
             "reply"  : reply,
+            "smallmodel":sm_text,
             "data"   : {}          # 以后若要返回结构化结果可填这里
         }
 

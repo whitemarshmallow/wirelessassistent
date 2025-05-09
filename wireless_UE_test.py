@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import io                # <‑ 之前就可能已经用到
+import contextlib
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -255,33 +257,97 @@ def solve_ta_distance(df):
 ############################
 # 问题调度函数
 ############################
-def solve_problem(problem_id, df):
+# def solve_problem(problem_id, df):
+#     """
+#     problem_id:
+#       1 -> 覆盖与性能评估
+#       2 -> 网络容量与吞吐分析
+#       3 -> QoS与切片管理
+#       4 -> 异常检测与网络故障排查
+#       5 -> 基于位置的业务体验分析
+#       6 -> Massive MIMO与波束管理评估
+#       7 -> TA与距离管理
+#     """
+#     if problem_id == 1:
+#         solve_coverage_performance(df)
+#     elif problem_id == 2:
+#         solve_capacity_throughput(df)
+#     elif problem_id == 3:
+#         solve_qos_slice(df)
+#     elif problem_id == 4:
+#         solve_anomaly_detection(df)
+#     elif problem_id == 5:
+#         solve_location_performance(df)
+#     elif problem_id == 6:
+#         solve_massive_mimo(df)
+#     elif problem_id == 7:
+#         solve_ta_distance(df)
+#     else:
+#         print("无效的 problem_id，请输入 1~7 之间的数字。")
+
+# ─── 文件: wireless_UE_test.py ────────────────────────────────────────────
+import io
+import contextlib          # ⬅️ 新增，用于捕获 stdout
+# ... 其余原有 import 保持不变 …
+
+# -----------------------------------------------------------------------
+# 现有的 7 个子函数 (solve_coverage_performance 等) 都不动
+# -----------------------------------------------------------------------
+
+# ------------------ 新版调度函数 ---------------------------------------
+def solve_problem(problem_id, df, *, to_str: bool = False):
     """
     problem_id:
-      1 -> 覆盖与性能评估
-      2 -> 网络容量与吞吐分析
-      3 -> QoS与切片管理
-      4 -> 异常检测与网络故障排查
-      5 -> 基于位置的业务体验分析
-      6 -> Massive MIMO与波束管理评估
-      7 -> TA与距离管理
+      1 → 覆盖与性能评估
+      2 → 网络容量与吞吐分析
+      3 → QoS 与切片管理
+      4 → 异常检测与网络故障排查
+      5 → 基于位置的业务体验分析
+      6 → Massive‑MIMO 与波束管理评估
+      7 → TA 与距离管理
+
+    参数
+    ----
+    df      : 预先加载好的 DataFrame
+    to_str  : True  → 捕获所有 print 并返回字符串
+              False → 直接 print（旧行为）
+
+    返回
+    ----
+    * to_str=False → None
+    * to_str=True  → str
     """
-    if problem_id == 1:
-        solve_coverage_performance(df)
-    elif problem_id == 2:
-        solve_capacity_throughput(df)
-    elif problem_id == 3:
-        solve_qos_slice(df)
-    elif problem_id == 4:
-        solve_anomaly_detection(df)
-    elif problem_id == 5:
-        solve_location_performance(df)
-    elif problem_id == 6:
-        solve_massive_mimo(df)
-    elif problem_id == 7:
-        solve_ta_distance(df)
-    else:
-        print("无效的 problem_id，请输入 1~7 之间的数字。")
+
+    # ---------- 若需要捕获，重定向 stdout ----------
+    if to_str:
+        buf = io.StringIO()
+        ctx = contextlib.redirect_stdout(buf)
+        ctx.__enter__()
+
+    try:
+        # ---------- 原有逻辑 ----------
+        if problem_id == 1:
+            solve_coverage_performance(df)
+        elif problem_id == 2:
+            solve_capacity_throughput(df)
+        elif problem_id == 3:
+            solve_qos_slice(df)
+        elif problem_id == 4:
+            solve_anomaly_detection(df)
+        elif problem_id == 5:
+            solve_location_performance(df)
+        elif problem_id == 6:
+            solve_massive_mimo(df)
+        elif problem_id == 7:
+            solve_ta_distance(df)
+        else:
+            print("无效的 problem_id，请输入 1~7 之间的数字。")
+
+    finally:
+        # ---------- 恢复 stdout 并返回结果 ----------
+        if to_str:
+            ctx.__exit__(None, None, None)
+            return buf.getvalue()
 
 
 ############################
@@ -290,7 +356,7 @@ def solve_problem(problem_id, df):
 if __name__ == "__main__":
     # 1) 加载数据文件
     #   假设你把示例数据另存为 "sample_data.txt"
-    data_file = "UEReports.csv"  # 修改为你的实际数据文件名
+    data_file = "data/UEReports.csv"  # 修改为你的实际数据文件名
     df = load_data(data_file)
 
     # 2) 打印菜单供用户选择
