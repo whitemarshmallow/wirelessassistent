@@ -1,4 +1,44 @@
 #!/usr/bin/env python3
+
+# ──────────────────────────────────────────────────────────────
+# 项目结构 & 职责一览【调测速查】
+# ──────────────────────────────────────────────────────────────
+#
+#  当前目录：
+#  ├─ app.py                            ← Flask 启动入口，只管 HTTP/JSON             (你大多只改路由)
+#  ├─ assistant_core.py                 ← “/api/assistant” 的业务编排：               (经常改)
+#  │                                       ‑ 拆前端 JSON
+#  │                                       ‑ 调大模型 Agent  (可关)
+#  │                                       ‑ 懒加载小模型    (cell / UE)
+#  │                                       ‑ 组装统一回复
+#  │
+#  ├─ gen_core.py                       ← 画热力图核心：读 CSV → Matplotlib → PNG   (已稳定)
+#  ├─ data_filter.py                    ← 下载 Viavi CSV/ZIP 的裁剪打包逻辑          (偶尔改)
+#  │
+#  ├─ wireless_cell_test.py             ← “基站侧” 7 个小模型示例                    (算法实验)
+#  ├─ wireless_UE_test.py               ← “UE 侧” 7 个小模型示例                    (算法实验)
+#  │
+#  ├─ agent_sql_r1_pingpong_… .py       ← 大模型 + MySQL 记忆 + 小模型混合 Agent     (可选开关)
+#  └─ test.py                           ← 零散脚本/一次性调试                       (自由发挥)
+#
+#  数据目录（与代码同级或自行修改路径）：
+#  ├─ data/                             ← UEReports.csv / CellReports.csv … 原始数据
+#  └─ generated_images/                 ← gen_core 生成的 PNG 将自动写入
+#
+#  调试小贴士
+#  ----------------------------------------------------------------
+#  1. 仅改小模型算法 → 改 wireless_cell_test.py / wireless_UE_test.py，记得
+#     solve_problem(..., to_str=True) 能把 print 捕获回 assistant_core。
+#  2. 调接口：
+#       • /api/assistant            → 业务主流程（文字 + 小模型）
+#       • /api/assistant/image      → 画图
+#       • /api/download‑viaviData   → 数据裁剪/下载
+#  3. 若前端 500，大多是 assistant_core 捕获到异常；看返回里的
+#     "thinking" 或终端 traceback 定位。
+#  4. 屏蔽大模型：前端传 {"modelOptions":{"useLargeModel":false}}
+# ──────────────────────────────────────────────────────────────
+
+
 # app.py  —— 直接  python app.py  即可启动
 import os, io, json, zipfile, pathlib
 import matplotlib
@@ -12,6 +52,8 @@ from assistant_core import analyse_and_reply
 # 将核心算法导入
 from gen_core import generate_images, DATA_DIR
 from data_filter import filter_viavi
+
+
 
 # from assistant_core import analyse_and_reply
 
