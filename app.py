@@ -53,6 +53,8 @@ from assistant_core import analyse_and_reply
 from gen_core import generate_images, DATA_DIR
 from data_filter import filter_viavi
 
+from upload_analyse import analyse_csv_and_ask_llm
+
 
 
 # from assistant_core import analyse_and_reply
@@ -129,6 +131,52 @@ def api_assistant():
     except Exception as e:
         app.logger.error(traceback.format_exc())
         return jsonify({"success": False, "code": 500, "msg": str(e)}), 500
+
+
+    # -------------------------------------------------------------------
+    # ③  网优 CSV 上传 + LLM 建议   POST /api/network/uploadCsv
+    # -------------------------------------------------------------------
+@app.route("/api/network/uploadCsv", methods=["POST"])
+def api_upload_csv():
+    """
+    前端 form‑data:  file=<CSV文件>
+    返回:
+      {
+        "success": true,
+        "message": "网优数据分析完成",
+        "suggestion": "这里是网优建议内容..."
+      }
+    """
+    try:
+        # 1) 取文件
+        if "file" not in request.files:
+            return jsonify({"success": False, "message": "缺少 file 字段"}), 400
+
+        file = request.files["file"]
+        if file.filename == "":
+            return jsonify({"success": False, "message": "文件名为空"}), 400
+
+        # 2) 落盘到临时目录
+        import tempfile, pathlib
+        tmp_dir = tempfile.TemporaryDirectory()
+        save_path = pathlib.Path(tmp_dir.name) / file.filename
+        file.save(save_path)
+
+        # 3) 分析 + 调大模型
+        suggestion = analyse_csv_and_ask_llm(str(save_path))
+
+        return jsonify({
+            "success": True,
+            "message": "网优数据分析完成",
+            "suggestion": suggestion
+        })
+
+    except Exception as e:
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+            "success": False,
+            "message": f"服务器异常: {e}"
+        }), 500
 
 # ---------- 入口 ----------
 if __name__ == "__main__":

@@ -259,37 +259,6 @@ def solve_kpi_qos(df):
     print("----------------------------------\n")
 
 
-    ############################
-    # 主流程：根据用户输入调用对应函数
-    ############################
-# def solve_problem(problem_id, df):
-#     """
-#     问题对应关系：
-#       1 -> 容量与负载管理
-#       2 -> 能耗与能效分析
-#       3 -> 邻区关系和切换优化
-#       4 -> 基站MIMO/波束管理
-#       5 -> RRC连接分析
-#       6 -> PCI/天线方向 & 邻区
-#       7 -> 综合KPI & QoS预测
-#     """
-#     if problem_id == 1:
-#         solve_capacity_load(df)
-#     elif problem_id == 2:
-#         solve_energy_efficiency(df)
-#     elif problem_id == 3:
-#         solve_handover_optimization(df)
-#     elif problem_id == 4:
-#         solve_mimo_beam(df)
-#     elif problem_id == 5:
-#         solve_rrc_connection(df)
-#     elif problem_id == 6:
-#         solve_pci_antenna_neighbor(df)
-#     elif problem_id == 7:
-#         solve_kpi_qos(df)
-#     else:
-#         print("无效的问题 ID，请输入 1~7")
-
 def solve_problem(problem_id, df, *, to_str: bool = False):
     """
     参数

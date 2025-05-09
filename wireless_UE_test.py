@@ -254,36 +254,6 @@ def solve_ta_distance(df):
     print("--------------------------------------------\n")
 
 
-############################
-# 问题调度函数
-############################
-# def solve_problem(problem_id, df):
-#     """
-#     problem_id:
-#       1 -> 覆盖与性能评估
-#       2 -> 网络容量与吞吐分析
-#       3 -> QoS与切片管理
-#       4 -> 异常检测与网络故障排查
-#       5 -> 基于位置的业务体验分析
-#       6 -> Massive MIMO与波束管理评估
-#       7 -> TA与距离管理
-#     """
-#     if problem_id == 1:
-#         solve_coverage_performance(df)
-#     elif problem_id == 2:
-#         solve_capacity_throughput(df)
-#     elif problem_id == 3:
-#         solve_qos_slice(df)
-#     elif problem_id == 4:
-#         solve_anomaly_detection(df)
-#     elif problem_id == 5:
-#         solve_location_performance(df)
-#     elif problem_id == 6:
-#         solve_massive_mimo(df)
-#     elif problem_id == 7:
-#         solve_ta_distance(df)
-#     else:
-#         print("无效的 problem_id，请输入 1~7 之间的数字。")
 
 # ─── 文件: wireless_UE_test.py ────────────────────────────────────────────
 import io
